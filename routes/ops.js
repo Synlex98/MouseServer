@@ -20,6 +20,7 @@ router.post('/user/create', function(req, res, next) {
     getNear().then(r => {
         createUser().then(user => {
             res.send(JSON.stringify(user))
+            res.end()
         })
     })
 
@@ -31,6 +32,7 @@ router.post('/user/get', function(req, res, next) {
         getNear().then(r => {
             getUser(userId).then(user => {
                 res.send(JSON.stringify(user))
+                res.end()
             })
         })
 
@@ -42,6 +44,7 @@ router.post('/points/get', function(req, res, next) {
     getNear().then(() => {
         getPoints(userId).then(points => {
             res.send(JSON.stringify(points))
+            res.end()
         })
     })
 });
@@ -51,25 +54,31 @@ router.post('/levels/get', function(req, res, next) {
     getNear().then(() => {
         getUserLevel(userId).then(r => {
             res.send(r)
+            res.end()
         })
     })
 });
 
 router.post('/points/change', function(req, res, next) {
-    let points=JSON.parse(req.body.points)
+    let userId=req.body.userId
+    let points=req.body.points
     console.log(points)
     getNear().then(() => {
-        changePoints(JSON.stringify(points)).then(message => {
+        changePoints(userId,points).then(message => {
             res.send(message)
+            res.end()
         })
     })
 });
 
 router.post('/level/change', function(req, res, next) {
-    let levels=JSON.parse(req.body.level)
+    let level=req.body.level
+    let userId=req.body.userId
+    console.log(level,userId)
     getNear().then(() => {
-        changeLevel(levels).then(message => {
+        changeLevel(userId,level).then(message => {
             res.send(message)
+            res.end()
         })
     })
 });
@@ -90,13 +99,13 @@ async function getUserLevel(userIdValue){
     return await contract.getCurrentUserLevel({userId:userIdValue})
 }
 
-async function changePoints(newPoints){
-    await contract.updatePoints({points:newPoints})
+async function changePoints(userId,points){
+    await contract.updatePoints({"userId":userId,"points":points})
     return "success"
 }
 
-async function changeLevel(userLevel){
-    await contract.changeLevel({level:userLevel})
+async function changeLevel(userId,level){
+    await contract.changeLevel({"userId":userId,"level":level})
     return "success"
 }
 
